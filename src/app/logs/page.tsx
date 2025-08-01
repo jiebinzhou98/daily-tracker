@@ -12,7 +12,17 @@ export default function LogPage(){
             {logs.length === 0 && <p>No logs yet.</p>}
             {logs.map((log) => (
                 <div key={log.timestamp} className="flex justify-between items-center border p-2 rounded">
-                    <span>{log.date} - {log.type}</span>
+                    <span>
+                        {log.date} - {log.type}
+                        {typeof log.note === "string" && log.note && (
+                            <span className="text-gray-500 ml-2">({log.note})</span>
+                        )}
+                        {typeof log.note === "object" && log.note && (
+                            <span className="text-gray-500 ml-2">
+                                ({log.note.company || "N/A"} - {log.note.position || "N/A"} - {log.note.source || "N/A"})
+                            </span>
+                        )}
+                        </span>
                     <Button
                         variant="destructive"
                         size="sm"

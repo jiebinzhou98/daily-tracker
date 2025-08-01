@@ -6,7 +6,11 @@ export interface LogItem {
     date: string;
     type: "coffee" | "exercise" | "job";
     timestamp: number;
-    note?: string;
+    note?: string | {
+        company?: string;
+        position?: string;
+        source?: string;
+    };
 }
 
 const STORAGE_KEY = "personal-tracker-logs";
@@ -29,12 +33,19 @@ export function useLocalStorageLogs() {
     const addLog = (type: "coffee" | "exercise" | "job") => {
         const stored = localStorage.getItem(STORAGE_KEY);
         const currentLogs: LogItem[] = stored ? JSON.parse(stored) : [];
-
         const today = new Date().toISOString().split("T")[0];
 
-        let note;
+        let note: LogItem["note"] = "";
+
         if(type === "job"){
-            note = prompt("Enter a job posting information:") || "";
+            const company = prompt("Enter company name");
+            if(company === null) return;
+            const position = prompt("Enter position");
+            if(position === null) return;
+            const source = prompt("Enter source (e.g., LinkedIn, Company Website)");
+            if(source === null) return;
+            
+            note = { company, position, source };
         }
         const newLog: LogItem = {
             date: today,
