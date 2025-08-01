@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocalStorageLogs } from "@/hooks/useLocalStorageLogs";
+import CalendarView from "@/components/CalendarView";
 
 export default function Home() {
   const { logs, addLog } = useLocalStorageLogs();
@@ -63,7 +64,7 @@ export default function Home() {
           <CardTitle>Calendar</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>Calendar</p>
+          <CalendarView />
         </CardContent>
       </Card>
     </main>
