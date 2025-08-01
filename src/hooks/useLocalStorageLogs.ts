@@ -6,6 +6,7 @@ export interface LogItem {
     date: string;
     type: "coffee" | "exercise" | "job";
     timestamp: number;
+    note?: string;
 }
 
 const STORAGE_KEY = "personal-tracker-logs";
@@ -30,10 +31,16 @@ export function useLocalStorageLogs() {
         const currentLogs: LogItem[] = stored ? JSON.parse(stored) : [];
 
         const today = new Date().toISOString().split("T")[0];
+
+        let note;
+        if(type === "job"){
+            note = prompt("Enter a job posting information:") || "";
+        }
         const newLog: LogItem = {
             date: today,
             type,
             timestamp: Date.now(),
+            note
         };
         const updatedLogs = [...currentLogs, newLog];
         saveLogs(updatedLogs);
