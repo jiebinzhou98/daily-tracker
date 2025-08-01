@@ -60,9 +60,6 @@ export default function Home() {
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Calendar</CardTitle>
-        </CardHeader>
         <CardContent>
           <CalendarView />
         </CardContent>

@@ -1,63 +1,70 @@
-'use client'
+"use client";
 
-import { useState } from "react"
-import { useLocalStorageLogs } from "@/hooks/useLocalStorageLogs"
+import { useState } from "react";
+import { useLocalStorageLogs } from "@/hooks/useLocalStorageLogs";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { isSameDay } from "date-fns";
+import CustomDayButton from "@/components/CustomDayButton";
+
+interface DayContentProps {
+    date: Date;
+    displayMonth: Date;
+}
 
 export default function CalendarView() {
-    const {logs} = useLocalStorageLogs()
-    const [selectedDate, setSelectedDate] = useState<string>("");
+    const { logs } = useLocalStorageLogs();
+    const [date, setDate] = useState<Date | undefined>(new Date());
 
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
+    function CustomDayContent({ date }: { date: Date }) {
+        const dayLogs = logs.filter((log) => isSameDay(new Date(log.date), date));
 
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const hasCoffee = dayLogs.some((l) => l.type === "coffee");
+        const hasExercise = dayLogs.some((l) => l.type === "exercise");
+        const hasJob = dayLogs.some((l) => l.type === "job");
 
-    const logDates = logs.map((log) => log.date);
-
-    const dates = Array.from({length: daysInMonth}, (_, i) => {
-        const day = i + 1;
-        const dateStr = `${year} - ${String(month + 1). padStart(2, "0")} - ${String(day).padStart(2, "0")}`;
-        const hasLog = logDates.includes(dateStr);
-        return {day, dateStr, hasLog};
-    });
-
-    const selectedLogs = logs.filter((log) => log.date === selectedDate);
+        return (
+            <div className="relative flex flex-col items-center">
+                <span>{date.getDate()}</span>
+                <div className="flex gap-0.5 mt-0.5">
+                    {hasCoffee && <span className="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>}
+                    {hasExercise && <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span>}
+                    {hasJob && <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>}
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-center">
-                {today.toLocaleString("default", {month: "long"})} {year}
-            </h2>
-            <div className="grid grid-cols-7 gap-1 text-center">
-                {dates.map (({day, dateStr, hasLog}) => (
-                    <button
-                        key={dateStr}
-                        onClick={() => setSelectedDate(dateStr)}
-                        className={`p-2 rounded text-sm ${hasLog ? "bg-green-200" : "bg-gray-100"}
-                        ${selectedDate === dateStr ? "border border-blue-500" : ""}`}
-                    >
-                        {day}
-                    </button>
-                ))}
-            </div>
+        <Popover>
+            <PopoverTrigger asChild>
+                <Card className="cursor-pointer hover:bg-muted transition">
+                    <CardHeader>
+                        <CardTitle>Calendar</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-gray-500">Tap to view your activity history</p>
+                    </CardContent>
+                </Card>
+            </PopoverTrigger>
 
-            {selectedDate && (
-                <div className="mt-2 p-2 border rounded bg-gray-50">
-                    <p className="font-medium">Logs on {selectedDate}</p>
-                    {selectedLogs.length === 0 && <p>No logs</p>}
-                    {selectedLogs.map((log) => (
-                        <p key={log.timestamp}>
-                            - {log.type}
-                            {typeof log.note === "string" && log.note && `(${log.note})`}
-                            {typeof log.note === "object" && log.note && (
-                                `(${log.note.company || ""} - ${log.note.position || ""} - ${log.note.source || ""})`
-                            )}
-                        </p>
-                    ))}
-                </div>
-            )}
-        </div>
-    )
+            <PopoverContent
+                className="w-[90vw] max-w-md p-2 rounded-lg shadow-lg bg-white"
+                align="center"
+                side="bottom"
+                sideOffset={8}
+            >
+<Calendar
+  mode="single"
+  selected={date}
+  onSelect={setDate}
+  components={{
+    DayButton: (props) => <CustomDayButton {...props} logs={logs} />,
+  }}
+/>
+
+            </PopoverContent>
+        </Popover>
+    );
 }
