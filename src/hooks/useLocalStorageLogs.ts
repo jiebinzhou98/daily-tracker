@@ -39,5 +39,10 @@ export function useLocalStorageLogs() {
         saveLogs(updatedLogs);
     };
 
-    return { logs, addLog };
+    const removeLog = (timestamp: number) => {
+        const updatedLogs = logs.filter((log) => log.timestamp !== timestamp);
+        saveLogs(updatedLogs);
+    }
+
+    return { logs, addLog, removeLog };
 }

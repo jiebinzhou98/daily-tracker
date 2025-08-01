@@ -11,8 +11,10 @@ export default function Home() {
       <h1 className="text-2xl font-bold">Personal Tracker</h1>
 
       <div className="flex flex-col gap-2">
-        <Button onClick={() => addLog("coffee")}>Log Coffee</Button>
-        <Button onClick={() => addLog("exercise")}>Log Exercise</Button>
+        <Button onClick={() => {if (window.confirm("You sure you had a second cup?"))
+           {addLog("coffee")}}}>Log Coffee</Button>
+        <Button onClick={() => {if (window.confirm("You sure to record this?"))
+            {addLog("exercise")}}}>Log Exercise</Button>
         <Button onClick={() => addLog("job")}>Log Job Application</Button>
       </div>
 
